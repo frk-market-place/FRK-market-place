@@ -96,8 +96,25 @@
 
         .nav-actions {
             display: flex;
-            gap: 1rem;
+            gap: 0.75rem;
             align-items: center;
+        }
+
+        .lang-select {
+            padding: 0.5rem 0.75rem;
+            border-radius: 10px;
+            border: 2px solid var(--primary-light);
+            background: white;
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .lang-select:hover {
+            background: var(--primary-light);
         }
 
         .btn {
@@ -562,25 +579,37 @@
             </div>
             <div class="logo-text">
                 <h1>FRK MOBILE'S MARKET PLACE</h1>
-                <span>Verified Store</span>
+                <span id="storeSubtitle">Verified Store</span>
             </div>
         </div>
         <div class="nav-actions">
+            <select id="langSelect" class="lang-select" onchange="changeLanguage(this.value)">
+                <option value="en">English</option>
+                <option value="ur">اردو</option>
+                <option value="ps">پښتو</option>
+                <option value="ar">العربية</option>
+                <option value="zh">中文</option>
+                <option value="pa">ਪੰਜਾਬੀ</option>
+                <option value="sd">سنڌي</option>
+                <option value="sk">سرائیکی</option>
+                <option value="bal">بلوچی</option>
+                <option value="hn">هندکو</option>
+            </select>
             <button class="btn btn-outline" id="adminToggleBtn" onclick="openLoginModal()">
-                <i class="fa-solid fa-lock"></i> Admin Login
+                <i class="fa-solid fa-lock"></i> <span data-i18n="adminLogin">Admin Login</span>
             </button>
             <button class="btn btn-danger" id="adminLogoutBtn" style="display: none;" onclick="logoutAdmin()">
-                <i class="fa-solid fa-right-from-bracket"></i> Logout Admin
+                <i class="fa-solid fa-right-from-bracket"></i> <span data-i18n="logoutAdmin">Logout Admin</span>
             </button>
         </div>
     </header>
 
     <!-- Hero Section -->
     <section class="hero">
-        <h2>Discover Great Daily 2nd Hand Deals</h2>
-        <p>Browse fresh items uploaded daily with verified local contacts and prices.</p>
+        <h2 data-i18n="heroTitle">Discover Great Daily 2nd Hand Deals</h2>
+        <p data-i18n="heroSubtitle">Browse fresh items uploaded daily with verified local contacts and prices.</p>
         <div class="search-bar">
-            <input type="text" id="searchInput" placeholder="Search items by name or location..." onkeyup="filterItemsLocally()">
+            <input type="text" id="searchInput" placeholder="Search items by name or location..." data-i18n-placeholder="searchPlaceholder" onkeyup="filterItemsLocally()">
             <button class="btn" style="border-radius: 50px; padding: 0.5rem 1.25rem;"><i class="fa-solid fa-search"></i></button>
         </div>
     </section>
@@ -588,9 +617,9 @@
     <!-- Main Container -->
     <div class="container">
         <div class="section-header">
-            <h3><i class="fa-solid fa-fire text-primary" style="color: var(--primary);"></i> Daily Listed Items</h3>
+            <h3><i class="fa-solid fa-fire" style="color: var(--primary);"></i> <span data-i18n="dailyItems">Daily Listed Items</span></h3>
             <button class="btn" id="addItemBtn" style="display: none;" onclick="openAddModal()">
-                <i class="fa-solid fa-plus"></i> Add New Item
+                <i class="fa-solid fa-plus"></i> <span data-i18n="addNewItem">Add New Item</span>
             </button>
         </div>
 
@@ -613,20 +642,20 @@
     <div class="modal" id="loginModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>Admin Authentication</h3>
+                <h3 data-i18n="adminAuth">Admin Authentication</h3>
                 <button class="close-btn" onclick="closeModal('loginModal')">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <label>Admin Email Address</label>
+                    <label data-i18n="adminEmail">Admin Email Address</label>
                     <input type="email" id="loginEmail" placeholder="Enter admin email">
                 </div>
                 <div class="form-group">
-                    <label>Password</label>
+                    <label data-i18n="password">Password</label>
                     <input type="password" id="loginPassword" placeholder="Enter password">
-                    <div class="error-msg" id="loginError">Invalid email or password credentials.</div>
+                    <div class="error-msg" id="loginError" data-i18n="loginError">Invalid email or password credentials.</div>
                 </div>
-                <button class="btn" style="width: 100%; justify-content: center; margin-top: 0.5rem;" onclick="handleLogin()">Login to Dashboard</button>
+                <button class="btn" style="width: 100%; justify-content: center; margin-top: 0.5rem;" onclick="handleLogin()" data-i18n="loginBtn">Login to Dashboard</button>
             </div>
         </div>
     </div>
@@ -635,44 +664,44 @@
     <div class="modal" id="itemModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 id="itemModalTitle">Add New Item</h3>
+                <h3 id="itemModalTitle" data-i18n="addItemTitle">Add New Item</h3>
                 <button class="close-btn" onclick="closeModal('itemModal')">&times;</button>
             </div>
             <div class="modal-body">
                 <input type="hidden" id="editDocId" value="">
                 <div class="form-group">
-                    <label>Item Name</label>
+                    <label data-i18n="itemNameLabel">Item Name</label>
                     <input type="text" id="itemName" placeholder="e.g. Used Smartphone / Generator">
                 </div>
                 <div class="form-group">
-                    <label>Price</label>
+                    <label data-i18n="itemPriceLabel">Price</label>
                     <input type="text" id="itemPrice" placeholder="e.g. Rs 15,000">
                 </div>
                 <div class="form-group">
-                    <label>Mobile Number (For Call)</label>
+                    <label data-i18n="itemMobileLabel">Mobile Number (For Call)</label>
                     <input type="text" id="itemMobile" placeholder="e.g. 03001234567">
                 </div>
                 <div class="form-group">
-                    <label>WhatsApp Number (Optional)</label>
+                    <label data-i18n="itemWhatsappLabel">WhatsApp Number (Optional)</label>
                     <input type="text" id="itemWhatsapp" placeholder="e.g. 923001234567 (with country code)">
                 </div>
                 <div class="form-group">
-                    <label>Location</label>
+                    <label data-i18n="itemLocationLabel">Location</label>
                     <input type="text" id="itemLocation" placeholder="e.g. Main Bazaar, Mardan">
                 </div>
                 <div class="form-group">
-                    <label>Upload Item Images (1 to 10 Images - Optional)</label>
+                    <label data-i18n="itemImagesLabel">Upload Item Images (1 to 10 Images - Optional)</label>
                     <input type="file" id="itemImagesFile" accept="image/*" multiple onchange="processMultipleImages(event)">
-                    <small style="color: var(--text-muted); display:block; margin-top:0.25rem;">Select multiple photos at once from your phone gallery.</small>
+                    <small style="color: var(--text-muted); display:block; margin-top:0.25rem;" data-i18n="itemImagesHelp">Select multiple photos at once from your phone gallery.</small>
                 </div>
-                <button class="btn" style="width: 100%; justify-content: center; margin-top: 0.5rem;" onclick="saveItemToCloud()">Save Item Online</button>
+                <button class="btn" style="width: 100%; justify-content: center; margin-top: 0.5rem;" onclick="saveItemToCloud()" data-i18n="saveItemBtn">Save Item Online</button>
             </div>
         </div>
     </div>
 
     <!-- Footer -->
     <footer>
-        <p>&copy; 2026 <span>FRK MOBILE'S MARKET PLACE</span>. All rights reserved. Designed with cloud sync database.</p>
+        <p>&copy; 2026 <span>FRK MOBILE'S MARKET PLACE</span>. <span data-i18n="footerRights">All rights reserved. Designed with cloud sync database.</span></p>
     </footer>
 
     <!-- JavaScript & Firebase Real-Time Logic -->
@@ -699,6 +728,377 @@
         let currentLightboxImages = [];
         let currentLightboxIndex = 0;
 
+        // Translations Dictionary for 10 Languages
+        const translations = {
+            en: {
+                storeSubtitle: "Verified Store",
+                adminLogin: "Admin Login",
+                logoutAdmin: "Logout Admin",
+                heroTitle: "Discover Great Daily 2nd Hand Deals",
+                heroSubtitle: "Browse fresh items uploaded daily with verified local contacts and prices.",
+                searchPlaceholder: "Search items by name or location...",
+                dailyItems: "Daily Listed Items",
+                addNewItem: "Add New Item",
+                callNow: "Call Now",
+                whatsapp: "WhatsApp",
+                noContact: "No contact provided",
+                adminTools: "Admin Tools",
+                photosCount: "Photo",
+                photosCountPlural: "Photos",
+                priceOnRequest: "Price on request",
+                adminAuth: "Admin Authentication",
+                adminEmail: "Admin Email Address",
+                password: "Password",
+                loginError: "Invalid email or password credentials.",
+                loginBtn: "Login to Dashboard",
+                addItemTitle: "Add New Item",
+                itemNameLabel: "Item Name",
+                itemPriceLabel: "Price",
+                itemMobileLabel: "Mobile Number (For Call)",
+                itemWhatsappLabel: "WhatsApp Number (Optional)",
+                itemLocationLabel: "Location",
+                itemImagesLabel: "Upload Item Images (1 to 10 Images - Optional)",
+                itemImagesHelp: "Select multiple photos at once from your phone gallery.",
+                saveItemBtn: "Save Item Online",
+                footerRights: "All rights reserved. Designed with cloud sync database.",
+                editItemTitle: "Edit Online Item",
+                noItemsFound: "No items found online yet."
+            },
+            ur: {
+                storeSubtitle: "تصدیق شدہ دکان",
+                adminLogin: "ایڈمن لاگ ان",
+                logoutAdmin: "لاگ آؤٹ",
+                heroTitle: "روزانہ زبردست سیکنڈ ہینڈ ڈیلز دریافت کریں",
+                heroSubtitle: "تصدیق شدہ مقامی رابطوں اور قیمتوں کے ساتھ روزانہ اپ لوڈ ہونے والی نئی چیزیں دیکھیں۔",
+                searchPlaceholder: "نام یا مقام کے لحاظ سے تلاش کریں...",
+                dailyItems: "روزانہ کی فہرست کی اشیاء",
+                addNewItem: "نئی چیز شامل کریں",
+                callNow: "ابھی کال کریں",
+                whatsapp: "واٹس ایپ",
+                noContact: "کوئی رابطہ فراہم نہیں کیا گیا",
+                adminTools: "ایڈمن ٹولز",
+                photosCount: "تصویر",
+                photosCountPlural: "تصاویر",
+                priceOnRequest: "قیمت طلب کرنے پر",
+                adminAuth: "ایڈمن تصدیق",
+                adminEmail: "ایڈمن ای میل ایڈریس",
+                password: "پاس ورڈ",
+                loginError: "غلط ای میل یا پاس ورڈ کی اسناد۔",
+                loginBtn: "ڈیش بورڈ میں لاگ ان کریں",
+                addItemTitle: "نئی چیز شامل کریں",
+                itemNameLabel: "چیز کا نام",
+                itemPriceLabel: "قیمت",
+                itemMobileLabel: "موبائل نمبر (کال کے لیے)",
+                itemWhatsappLabel: "واٹس ایپ نمبر (اختیاری)",
+                itemLocationLabel: "مقام / علاقہ",
+                itemImagesLabel: "تصاویر اپ لوڈ کریں (1 سے 10 تصاویر)",
+                itemImagesHelp: "اپنے فون کی گیلری سے ایک ساتھ کئی تصاویر منتخب کریں۔",
+                saveItemBtn: "آن لائن محفوظ کریں",
+                footerRights: "جملہ حقوق محفوظ ہیں۔ کلاউڈ ڈیٹا بیس کے ساتھ ڈیزائن کیا گیا ہے۔",
+                editItemTitle: "آن لائن آئٹم میں ترمیم کریں",
+                noItemsFound: "ابھی تک کوئی آن لائن آئٹم نہیں ملا۔"
+            },
+            ps: {
+                storeSubtitle: "باورل شوی دکان",
+                adminLogin: "د اډمن ننوتل",
+                logoutAdmin: "وتل (لاګ آوټ)",
+                heroTitle: "د ورځني کارول شویو توکو ښه ډیلونه ومومئ",
+                heroSubtitle: "هره ورځ تازه اپلوډ شوي توکي د باور وړ شمیرو او قیمتونو سره وګورئ.",
+                searchPlaceholder: "د نوم یا ځای په واسطه توکي ولټوئ...",
+                dailyItems: "ورورځني خپاره شوي توکي",
+                addNewItem: "نوی توکی اضافه کړئ",
+                callNow: "زنګ ووهئ",
+                whatsapp: "واټساپ",
+                noContact: "هیڅ اړیکه نشته",
+                adminTools: "د اډمن وسایل",
+                photosCount: "عکس",
+                photosCountPlural: "عکسونه",
+                priceOnRequest: "قیمت په غوښتنه",
+                adminAuth: "د اډمن تصدیق",
+                adminEmail: "د اډمن برېښنالیک پته",
+                password: "پاسورد",
+                loginError: "ناسم برېښنالیک یا پاسورډ.",
+                loginBtn: "ډشبورډ ته ننوتل",
+                addItemTitle: "نوی توکی اضافه کړئ",
+                itemNameLabel: "د توکي نوم",
+                itemPriceLabel: "قیمت",
+                itemMobileLabel: "د موبایل شمیره (د زنګ لپاره)",
+                itemWhatsappLabel: "د واټساپ شمیره (اختیاري)",
+                itemLocationLabel: "ځای / علاقه",
+                itemImagesLabel: "د توکي عکسونه اپلوډ کړئ (1 تر 10 عکسونه)",
+                itemImagesHelp: "د خپل تلیفون ګالري څخه یوځل څو عکسونه وټاکئ.",
+                saveItemBtn: "توکی آنلاین خوندي کړئ",
+                footerRights: "ټول حقوق خوندي دي. د کلاوډ ډیټابیس سره جوړ شوی.",
+                editItemTitle: "آنلاین توکی بدلول",
+                noItemsFound: "تر اوسه هغسې آنلاین توکي نشته."
+            },
+            ar: {
+                storeSubtitle: "متجر معتمد",
+                adminLogin: "تسجيل دخول المشرف",
+                logoutAdmin: "تسجيل الخروج",
+                heroTitle: "اكتشف عروض السلع المستعملة الرائعة يومياً",
+                heroSubtitle: "تصفح العناصر الجديدة التي يتم تحميلها يومياً مع جهات الاتصال المحلية والأسعار الموثوقة.",
+                searchPlaceholder: "البحث عن العناصر بالاسم أو الموقع...",
+                dailyItems: "العناصر المدرجة اليومية",
+                addNewItem: "إضافة عنصر جديد",
+                callNow: "اتصل الآن",
+                whatsapp: "واتساب",
+                noContact: "لا توجد جهة اتصال",
+                adminTools: "أدوات المشرف",
+                photosCount: "صورة",
+                photosCountPlural: "صور",
+                priceOnRequest: "السعر عند الطلب",
+                adminAuth: "مصادقة المشرف",
+                adminEmail: "بريد المشرف الإلكتروني",
+                password: "كلمة المرور",
+                loginError: "بيانات اعتماد البريد الإلكتروني أو كلمة المرور غير صالحة.",
+                loginBtn: "تسجيل الدخول إلى لوحة التحكم",
+                addItemTitle: "إضافة عنصر جديد",
+                itemNameLabel: "اسم العنصر",
+                itemPriceLabel: "السعر",
+                itemMobileLabel: "رقم الجوال (للاتصال)",
+                itemWhatsappLabel: "رقم الواتساب (اختياري)",
+                itemLocationLabel: "الموقع",
+                itemImagesLabel: "تحميل صور العناصر (من 1 إلى 10 صور)",
+                itemImagesHelp: "حدد عدة صور دفعة واحدة من معرض هاتفك.",
+                saveItemBtn: "حفظ العنصر عبر الإنترنت",
+                footerRights: "جميع الحقوق محفوظة. مصمم باستخدام قاعدة بيانات سحابية.",
+                editItemTitle: "تعديل العنصر عبر الإنترنت",
+                noItemsFound: "لم يتم العثور على عناصر عبر الإنترنت حتى الآن."
+            },
+            zh: {
+                storeSubtitle: "认证商店",
+                adminLogin: "管理员登录",
+                logoutAdmin: "退出登录",
+                heroTitle: "发现每日精选二手好物",
+                heroSubtitle: "浏览每日上传的新商品，获取可靠的本地联系方式和价格。",
+                searchPlaceholder: "按名称或位置搜索商品...",
+                dailyItems: "每日上架商品",
+                addNewItem: "添加新商品",
+                callNow: "立即拨打",
+                whatsapp: "WhatsApp",
+                noContact: "未提供联系方式",
+                adminTools: "管理工具",
+                photosCount: "张照片",
+                photosCountPlural: "张照片",
+                priceOnRequest: "价格面议",
+                adminAuth: "管理员验证",
+                adminEmail: "管理员邮箱",
+                password: "密码",
+                loginError: "邮箱或密码错误。",
+                loginBtn: "登录控制面板",
+                addItemTitle: "添加新商品",
+                itemNameLabel: "商品名称",
+                itemPriceLabel: "价格",
+                itemMobileLabel: "手机号码（用于通话）",
+                itemWhatsappLabel: "WhatsApp号码（可选）",
+                itemLocationLabel: "位置/地区",
+                itemImagesLabel: "上传商品图片（1至10张）",
+                itemImagesHelp: "从手机相册中一次性选择多张照片。",
+                saveItemBtn: "在线保存商品",
+                footerRights: "版权所有。采用云端同步数据库构建。",
+                editItemTitle: "编辑在线商品",
+                noItemsFound: "暂无在线商品。"
+            },
+            pa: {
+                storeSubtitle: "تصديق شدہ دکان",
+                adminLogin: "إڈمن لاگ ان",
+                logoutAdmin: "لاگ آؤټ",
+                heroTitle: "روزانہ ودیا سیکنڈ ہینڈ ڈیلز لبھو",
+                heroSubtitle: "تصدیق شدہ مقامی رابطے اتے قیمتاں نال روز اپلوڈ ہون والیاں شیواں ویکھو۔",
+                searchPlaceholder: "نام یا تھاں نال شیواں لبھو...",
+                dailyItems: "روز دیاں لسٹ کیتیاں شیواں",
+                addNewItem: "نویں شے پاؤ",
+                callNow: "ہݨے کال کرو",
+                whatsapp: "واٹس ایپ",
+                noContact: "کوئی رابطہ نہیں",
+                adminTools: "ایڈمن ٹولز",
+                photosCount: "تصویر",
+                photosCountPlural: "تصویراں",
+                priceOnRequest: "قیمت پچھن تے",
+                adminAuth: "ایڈمن تصدیق",
+                adminEmail: "ایڈمن ای میل",
+                password: "پاس ورڈ",
+                loginError: "غلط ای میل یا پاس ورڈ۔",
+                loginBtn: "ڈیش بورڈ لاگ ان",
+                addItemTitle: "نویں شے شامل کرو",
+                itemNameLabel: "شے دا ناں",
+                itemPriceLabel: "قیمت",
+                itemMobileLabel: "موبائل نمبر (کال لئی)",
+                itemWhatsappLabel: "واٹس ایپ نمبر (اختیاری)",
+                itemLocationLabel: "تھاں / علاقہ",
+                itemImagesLabel: "تصویراں اپلوڈ کرو (1 توں 10 تصویراں)",
+                itemImagesHelp: "اپنے فون دی گیلری توں اکٹھے کئی تصویراں چنو۔",
+                saveItemBtn: "آن لائن محفوظ کرو",
+                footerRights: "سارے حق محفوظ نیں۔ کلاؤڈ ڈیٹا بیس نال تیار کیتا گیا اے۔",
+                editItemTitle: "آن لائن شے تبدیل کرو",
+                noItemsFound: "ہجے تک کوئی آن لائن شے نہیں ملی۔"
+            },
+            sd: {
+                storeSubtitle: "تصديق ٿيل دڪان",
+                adminLogin: "ايڊمن لاگ ان",
+                logoutAdmin: "لاگ άوٽ",
+                heroTitle: "روزاني شاندار سيڪنڊ هينڊ ڊيلز ڳوليو",
+                heroSubtitle: "تصديق ٿيل مقامي رابطن ۽ قيمتن سان روزانو اپلوڊ ٿيندڙ نوان شيون ڏسو.",
+                searchPlaceholder: "نالو يا هنڌ ذريعي شيون ڳوليو...",
+                dailyItems: "روزاني لسٽ ٿيل شيون",
+                addNewItem: "نئون شئي شامل ڪريو",
+                callNow: "هاڻي ڪال ڪريو",
+                whatsapp: "واٽس اپ",
+                noContact: "ڪو به رابطو موجود ناهي",
+                adminTools: "ايڊمن ٽول",
+                photosCount: "تصوير",
+                photosCountPlural: "تصويرون",
+                priceOnRequest: "قيمت پڇڻ تي",
+                adminAuth: "ايڊمن تصديق",
+                adminEmail: "ايڊمن جي ايميل",
+                password: "پاسورد",
+                loginError: "غلط ايميل يا پاسورڊ.",
+                loginBtn: "ڊيش بورڊ ۾ لاگ ان ٿيو",
+                addItemTitle: "نئون شئي شامل ڪريو",
+                itemNameLabel: "شئي جو نالو",
+                itemPriceLabel: "قيمت",
+                itemMobileLabel: "موبائيل نمبر (ڪال لاءِ)",
+                itemWhatsappLabel: "واٽس اپ نمبر (اختياري)",
+                itemLocationLabel: "هنڌ / علائقو",
+                itemImagesLabel: "تصويرون اپلوڊ ڪريو (1 کان 10 تصويرون)",
+                itemImagesHelp: "پنهنجي فون گيلري مان هڪ ئي وقت ڪيتريون ئي تصويرون چونڊيو.",
+                saveItemBtn: "آن لائين محفوظ ڪريو",
+                footerRights: "سڀ حق محفوظ آهن. ڪلاءِڊ ڊيٽابيس سان ٺهيل.",
+                editItemTitle: "آن لائين شيون تبديل ڪريو",
+                noItemsFound: "اڃا تائين ڪا به آن لائين شئي نه ملي آهي."
+            },
+            sk: {
+                storeSubtitle: "تصدیق شدہ دکان",
+                adminLogin: "ایڈمن لاگ ان",
+                logoutAdmin: "لاگ آؤٹ",
+                heroTitle: "روزانہ سوہݨے سیکنڈ ہینڈ ڈیلز ملسو",
+                heroSubtitle: "تصدیق شدہ مقامی رابطیں تے قیمتاں نال روز اپ لوڈ تھیوݨ والیاں شیواں ڈیکھو۔",
+                searchPlaceholder: "ناں یا جاہ نال شیواں گولیو...",
+                dailyItems: "روز دیاں درج شیواں",
+                addNewItem: "نئی شے رلاؤ",
+                callNow: "ہݨی کال کرو",
+                whatsapp: "واٹس ایپ",
+                noContact: "کوئی رابطہ کائنی",
+                adminTools: "ایڈمن ٹولز",
+                photosCount: "تصویر",
+                photosCountPlural: "تصویراں",
+                priceOnRequest: "قیمت پچھݨ تے",
+                adminAuth: "ایڈمن تصدیق",
+                adminEmail: "ایڈمن ای میل",
+                password: "پاس ورڈ",
+                loginError: "غلط ای میل یا پاس ورڈ۔",
+                loginBtn: "ڈیش بورڈ لاگ ان",
+                addItemTitle: "نئی شے رلاؤ",
+                itemNameLabel: "شے دا ناں",
+                itemPriceLabel: "قیمت",
+                itemMobileLabel: "موبائل نمبر (کال کیتے)",
+                itemWhatsappLabel: "واٹس ایپ نمبر (مرضی)",
+                itemLocationLabel: "جاہ / علاقہ",
+                itemImagesLabel: "تصویراں اپ لوڈ کرو (1 توں 10 تصویراں)",
+                itemImagesHelp: "اپݨے فون دی گیلری توں ہک واری کئی تصویراں چݨو۔",
+                saveItemBtn: "آن لائن محفوظ کرو",
+                footerRights: "کل حق محفوظ ہن۔ کلاؤڈ ڈیٹا بیس نال تیار تھیا ہن۔",
+                editItemTitle: "آن لائن شے تبدیل کرو",
+                noItemsFound: "حالی تئیں کوئی آن لائن شے کائنی ملی۔"
+            },
+            bal: {
+                storeSubtitle: "تثدیق بوتگیں دکان",
+                adminLogin: "ایڈمن لاگ ان",
+                logoutAdmin: "لاگ آؤٹ",
+                heroTitle: "روچ مرچی شریں سیکنڈ ہینڈ ڈیل دست رس کن ات",
+                heroSubtitle: "تثدیق بوتگیں مقامیں نمبر ءُ نرخانی گوں روچ مرچی نوکیں چیزاں بچار ات۔",
+                searchPlaceholder: "نام یا جاہ ءِ سرا چیزاں پٹ ات...",
+                dailyItems: "روچ مرچی لسٹ بوتگیں چیز",
+                addNewItem: "نوکیں چیزے زیاد کن ات",
+                callNow: "الان کال کن ات",
+                whatsapp: "واٹس ایپ",
+                noContact: "هچ رابطگ نیست",
+                adminTools: "ایڈمن آلات",
+                photosCount: "عکس",
+                photosCountPlural: "عکس",
+                priceOnRequest: "نرخ په لوٹ",
+                adminAuth: "ایڈمن تصدیق",
+                adminEmail: "ایڈمن ای میل",
+                password: "پاس ورڈ",
+                loginError: "گستاگیں ای میل یا پاس ورڈ۔",
+                loginBtn: "ڈیش بورڈ لاگ ان",
+                addItemTitle: "نوکیں چیزے زیاد کن ات",
+                itemNameLabel: "چیز ءِ نام",
+                itemPriceLabel: "نرخ",
+                itemMobileLabel: "موبائل نمبر (کال ءِ واستہ)",
+                itemWhatsappLabel: "واٹس ایپ نمبر (اختیاری)",
+                itemLocationLabel: "جاہ / علاقہ",
+                itemImagesLabel: "عکس اپ لوڈ کن ات (1 تا 10 عکس)",
+                itemImagesHelp: "وتی فون ءِ گیلری جه منشی مان مان کنگی عکس گچین کن ات۔",
+                saveItemBtn: "آن لائن محفوظ کن ات",
+                footerRights: "سہ حق محفوظ انت۔ کلاؤڈ ڈیٹا بیس ءِ گوں جوړ بوتگ۔",
+                editItemTitle: "آن لائن چیز بدل کن ات",
+                noItemsFound: "هنوز هچ آن لائن چیز دست نہ کپتگ۔"
+            },
+            hn: {
+                storeSubtitle: "تصدیک شُدہ دکان",
+                adminLogin: "ایڈمن لاگ ان",
+                logoutAdmin: "لاگ آؤٹ",
+                heroTitle: "روزانہ شاندار سیکنڈ ہینڈ ڈیلز لبھو",
+                heroSubtitle: "تصدیق شدہ مقامی رابطے تے قیمتاں نال روز اپ لوڈ تھیوݨ والیاں نویاں شیواں ویکھو۔",
+                searchPlaceholder: "ناں یا جاہ دے حساب نال شیواں لبھو...",
+                dailyItems: "روزانہ لسٹ کیتیاں شیواں",
+                addNewItem: "نویں شے شامل کرو",
+                callNow: "ہݨے کال کرو",
+                whatsapp: "واٹس ایپ",
+                noContact: "کوئی رابطہ نئیں",
+                adminTools: "ایڈمن ٹولز",
+                photosCount: "تصویر",
+                photosCountPlural: "تصویراں",
+                priceOnRequest: "قیمت پچھݨ تے",
+                adminAuth: "ایڈمن تصدیق",
+                adminEmail: "ایڈمن ای میل پتہ",
+                password: "پاس ورڈ",
+                loginError: "غلط ای میل یا پاس ورڈ۔",
+                loginBtn: "ڈیش بورڈ لاگ ان",
+                addItemTitle: "نویں شے شامل کرو",
+                itemNameLabel: "شے دا ناں",
+                itemPriceLabel: "قیمت",
+                itemMobileLabel: "موبائل نمبر (کال واسطے)",
+                itemWhatsappLabel: "واٹس ایپ نمبر (مرضی نال)",
+                itemLocationLabel: "جاہ / علاقہ",
+                itemImagesLabel: "تصویراں اپ لوڈ کرو (1 توں 10 تصویراں)",
+                itemImagesHelp: "اپݨے فون دی گیلری توں اکٹھے کئی تصویراں چݨو۔",
+                saveItemBtn: "آن لائن شے محفوظ کرو",
+                footerRights: "سارے حقوق محفوظ نیں۔ کلاؤڈ ڈیٹا بیس نال ڈیزائن کیتا گیا اے۔",
+                editItemTitle: "آن لائن شے تبدیل کرو",
+                noItemsFound: "حالی تئیں کوئی آن لائن شے نئیں لبھی۔"
+            }
+        };
+
+        let currentLang = 'en';
+
+        function changeLanguage(lang) {
+            currentLang = lang;
+            
+            // Handle RTL / LTR text direction updates for regional scripts
+            if (['ur', 'ps', 'ar', 'sd', 'sk', 'hn', 'bal', 'pa'].includes(currentLang)) {
+                document.documentElement.setAttribute('dir', 'rtl');
+            } else {
+                document.documentElement.setAttribute('dir', 'ltr');
+            }
+
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[currentLang][key]) {
+                    el.innerText = translations[currentLang][key];
+                }
+            });
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                if (translations[currentLang][key]) {
+                    el.placeholder = translations[currentLang][key];
+                }
+            });
+            renderItems(allLoadedItems);
+        }
+
         window.onload = function() {
             loadItemsFromDatabase();
         };
@@ -723,7 +1123,7 @@
             grid.innerHTML = '';
 
             if (data.length === 0) {
-                grid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 3rem;">No items found online yet.</p>`;
+                grid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 3rem;">${translations[currentLang].noItemsFound}</p>`;
                 return;
             }
 
@@ -740,17 +1140,19 @@
 
                 let actionButtonsHTML = '';
                 if (rawNumber) {
-                    actionButtonsHTML += `<a href="tel:${rawNumber}" class="btn"><i class="fa-solid fa-phone-volume"></i> Call Now</a>`;
+                    actionButtonsHTML += `<a href="tel:${rawNumber}" class="btn"><i class="fa-solid fa-phone-volume"></i> ${translations[currentLang].callNow}</a>`;
                 }
                 if (cleanWaNumber) {
-                    actionButtonsHTML += `<a href="https://wa.me/${cleanWaNumber}" target="_blank" class="btn btn-whatsapp"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>`;
+                    actionButtonsHTML += `<a href="https://wa.me/${cleanWaNumber}" target="_blank" class="btn btn-whatsapp"><i class="fa-brands fa-whatsapp"></i> ${translations[currentLang].whatsapp}</a>`;
                 }
+
+                const photoLabelText = images.length > 1 ? translations[currentLang].photosCountPlural : translations[currentLang].photosCount;
 
                 const card = document.createElement('div');
                 card.className = `item-card ${isAdminLoggedIn ? 'admin-mode' : ''}`;
                 card.innerHTML = `
                     <div class="item-img-container" id="${cardId}">
-                        <span class="item-badge">${images.length} Photo${images.length > 1 ? 's' : ''}</span>
+                        <span class="item-badge">${images.length} ${photoLabelText}</span>
                         <div class="slider-wrapper" style="transform: translateX(0%);">
                             ${sliderImagesHTML}
                         </div>
@@ -761,17 +1163,17 @@
                     </div>
                     <div class="item-details">
                         <h4 class="item-title">${item.name || 'Unnamed Item'}</h4>
-                        <div class="item-price">${item.price || 'Price on request'}</div>
+                        <div class="item-price">${item.price || translations[currentLang].priceOnRequest}</div>
                         <div class="item-meta">
                             ${item.location ? `<span><i class="fa-solid fa-location-dot" style="color: var(--accent);"></i> ${item.location}</span>` : ''}
                             ${item.mobile ? `<span><i class="fa-solid fa-phone" style="color: var(--success);"></i> ${item.mobile}</span>` : ''}
                         </div>
                         <div class="item-actions">
-                            ${actionButtonsHTML || '<span style="font-size:0.85rem; color:var(--text-muted);">No contact provided</span>'}
+                            ${actionButtonsHTML || `<span style="font-size:0.85rem; color:var(--text-muted);">${translations[currentLang].noContact}</span>`}
                         </div>
                     </div>
                     <div class="admin-controls">
-                        <span style="font-size: 0.8rem; font-weight: 700; color: var(--accent);">Admin Tools</span>
+                        <span style="font-size: 0.8rem; font-weight: 700; color: var(--accent);">${translations[currentLang].adminTools}</span>
                         <div>
                             <button class="btn btn-outline" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;" onclick="openEditModal('${item.id}')"><i class="fa-solid fa-pen"></i></button>
                             <button class="btn btn-danger" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;" onclick="deleteItemFromCloud('${item.id}')"><i class="fa-solid fa-trash"></i></button>
@@ -828,7 +1230,6 @@
             imgElement.src = currentLightboxImages[currentLightboxIndex];
             counterElement.innerText = `${currentLightboxIndex + 1} / ${currentLightboxImages.length}`;
 
-            // Show or hide navigation arrows if there's only 1 image or multiple
             if (currentLightboxImages.length > 1) {
                 prevBtn.style.display = 'flex';
                 nextBtn.style.display = 'flex';
@@ -864,7 +1265,7 @@
         }
 
         function openAddModal() {
-            document.getElementById('itemModalTitle').innerText = 'Add New Item Online (Optional Fields)';
+            document.getElementById('itemModalTitle').innerText = translations[currentLang].addItemTitle;
             document.getElementById('editDocId').value = '';
             document.getElementById('itemName').value = '';
             document.getElementById('itemPrice').value = '';
@@ -906,14 +1307,13 @@
             renderItems(allLoadedItems);
         }
 
-        // Process up to 10 selected images
         function processMultipleImages(event) {
             const files = event.target.files;
             tempImagesArray = [];
             
             const limit = Math.min(files.length, 10);
             if (files.length > 10) {
-                alert('You can select a maximum of 10 images. Only the first 10 will be uploaded.');
+                alert('You can select a maximum of 10 images.');
             }
 
             for (let i = 0; i < limit; i++) {
@@ -971,7 +1371,7 @@
             const item = allLoadedItems.find(i => i.id === id);
             if (!item) return;
 
-            document.getElementById('itemModalTitle').innerText = 'Edit Online Item';
+            document.getElementById('itemModalTitle').innerText = translations[currentLang].editItemTitle;
             document.getElementById('editDocId').value = item.id;
             document.getElementById('itemName').value = item.name || '';
             document.getElementById('itemPrice').value = item.price || '';
