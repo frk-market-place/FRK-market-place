@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FRK MARKET PLACE. STORE</title>
+    <!-- Google Fonts for typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Firebase App & Firestore SDK CDN Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+    
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-light: #e0e7ff;
+            --accent: #f43f5e;
+            --success: #10b981;
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.08), 0 8px 10px -6px rgba(99, 102, 241, 0.08);
+            --radius: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header & Navigation */
+        header {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            font-size: 1.25rem;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .logo-text h1 {
+            font-size: 1.25rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo-text span {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.65rem 1.25rem;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            opacity: 0.95;
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary-light);
+            box-shadow: none;
+        }
+
+        .btn-outline:hover {
+            background: var(--primary-light);
+        }
+
+        .btn-danger {
+            background: var(--accent);
+            box-shadow: 0 4px 12px rgba(244, 63, 94, 0.2);
+        }
+
+        /* Hero Banner */
+        .hero {
+            background: linear-gradient(135deg, #e0e7ff 0%, #fae8ff 50%, #ccfbf1 100%);
+            padding: 3rem 2rem;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero h2 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.75rem;
+            letter-spacing: -1px;
+            color: #0f172a;
+        }
+
+        .hero p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto 1.5rem auto;
+        }
+
+        .search-bar {
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            padding: 0.5rem;
+            border-radius: 50px;
+            display: flex;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+
+        .search-bar input {
+            flex: 1;
+            border: none;
+            padding: 0.75rem 1.25rem;
+            font-size: 1rem;
+            outline: none;
+            border-radius: 50px;
+            background: transparent;
+        }
+
+        /* Main Container & Grid */
+        .container {
+            max-width: 1280px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+            flex: 1;
+            width: 100%;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-header h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.75rem;
+        }
+
+        /* Item Card */
+        .item-card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            overflow: hidden;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .item-card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow);
+            border-color: var(--primary-light);
+        }
+
+        .item-img-container {
+            width: 100%;
+            height: 200px;
+            position: relative;
+            background: #f1f5f9;
+            overflow: hidden;
+        }
+
+        .item-img-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .item-card:hover .item-img-container img {
+            transform: scale(1.05);
+        }
+
+        .item-badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(4px);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--primary);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .item-details {
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .item-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-main);
+        }
+
+        .item-price {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--success);
+            margin-bottom: 0.75rem;
+        }
+
+        .item-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 1.25rem;
+            border-top: 1px dashed var(--border);
+            padding-top: 0.75rem;
+        }
+
+        .item-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .item-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: auto;
+        }
+
+        .item-actions .btn {
+            flex: 1;
+            justify-content: center;
+            padding: 0.6rem;
+            font-size: 0.9rem;
+        }
+
+        .admin-controls {
+            display: none;
+            background: #fff1f2;
+            padding: 0.5rem 1.25rem;
+            border-top: 1px solid #fecdd3;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .admin-mode .admin-controls {
+            display: flex;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .modal-content {
+            background: white;
+            width: 100%;
+            max-width: 480px;
+            border-radius: var(--radius);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            animation: modalSlideUp 0.3s ease;
+        }
+
+        @keyframes modalSlideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8fafc;
+        }
+
+        .modal-header h3 {
+            font-size: 1.15rem;
+            font-weight: 700;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            cursor: pointer;
+            color: var(--text-muted);
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+            color: var(--text-main);
+        }
+
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+            background: #f8fafc;
+        }
+
+        .form-group input:focus, .form-group textarea:focus {
+            border-color: var(--primary);
+            background: white;
+        }
+
+        .error-msg {
+            color: var(--accent);
+            font-size: 0.8rem;
+            margin-top: 0.25rem;
+            display: none;
+        }
+
+        /* Footer */
+        footer {
+            background: white;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            padding: 1.5rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: auto;
+        }
+
+        footer span {
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h2 { font-size: 1.85rem; }
+            header { padding: 1rem; }
+        }
+    </style>
+</head>
+<body id="bodyTag">
+
+    <!-- Header -->
+    <header>
+        <div class="logo-container">
+            <div class="logo-icon">
+                <i class="fa-solid fa-store"></i>
+            </div>
+            <div class="logo-text">
+                <h1>FRK MARKET PLACE</h1>
+                <span>Verified Store</span>
+            </div>
+        </div>
+        <div class="nav-actions">
+            <button class="btn btn-outline" id="adminToggleBtn" onclick="openLoginModal()">
+                <i class="fa-solid fa-lock"></i> Admin Login
+            </button>
+            <button class="btn btn-danger" id="adminLogoutBtn" style="display: none;" onclick="logoutAdmin()">
+                <i class="fa-solid fa-right-from-bracket"></i> Logout Admin
+            </button>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <h2>Discover Great Daily 2nd Hand Deals</h2>
+        <p>Browse fresh items uploaded daily with verified local contacts and prices.</p>
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Search items by name or location..." onkeyup="filterItemsLocally()">
+            <button class="btn" style="border-radius: 50px; padding: 0.5rem 1.25rem;"><i class="fa-solid fa-search"></i></button>
+        </div>
+    </section>
+
+    <!-- Main Container -->
+    <div class="container">
+        <div class="section-header">
+            <h3><i class="fa-solid fa-fire text-primary" style="color: var(--primary);"></i> Daily Listed Items</h3>
+            <button class="btn" id="addItemBtn" style="display: none;" onclick="openAddModal()">
+                <i class="fa-solid fa-plus"></i> Add New Item
+            </button>
+        </div>
+
+        <!-- Items Grid -->
+        <div class="items-grid" id="itemsGrid">
+            <!-- Dynamic Items Injected via Firebase -->
+        </div>
+    </div>
+
+    <!-- Admin Login Modal -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Admin Authentication</h3>
+                <button class="close-btn" onclick="closeModal('loginModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Admin Email Address</label>
+                    <input type="email" id="loginEmail" placeholder="Enter admin email">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" placeholder="Enter password">
+                    <div class="error-msg" id="loginError">Invalid email or password credentials.</div>
+                </div>
+                <button class="btn" style="width: 100%; justify-content: center; margin-top: 0.5rem;" onclick="handleLogin()">Login to Dashboard</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Item Modal -->
+    <div class="modal" id="itemModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="itemModalTitle">Add New Item</h3>
+                <button class="close-btn" onclick="closeModal('itemModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="editDocId" value="">
+                <div class="form-group">
+                    <label>Item Name</label>
+                    <input type="text" id="itemName" placeholder="e.g. Used Smartphone / Generator">
+                </div>
+                <div class="form-group">
+                    <label>Price</label>
+                    <input type="text" id="itemPrice" placeholder="e.g. Rs 15,000">
+                </div>
+                <div class="form-group">
+                    <label>Mobile Number</label>
+                    <input type="text" id="itemMobile" placeholder="e.g. 03001234567">
+                </div>
+                <div class="form-group">
+                    <label>Location</label>
+                    <input type="text" id="itemLocation" placeholder="e.g. Main Bazaar, Mardan">
+                </div>
+                <div class="form-group">
+                    <label>Item Image (Upload Local Image)</label>
+                    <input type="file" id="itemImageFile" accept="image/*" onchange="previewImage(event)">
+                    <input type="hidden" id="itemImageBase64">
+                </div>
+                <button class="btn" style="width: 100%; justify-content: center; margin-top: 0.5rem;" onclick="saveItemToCloud()">Save Item Online</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 <span>FRK MARKET PLACE. STORE</span>. All rights reserved. Designed with cloud sync database.</p>
+    </footer>
+
+    <!-- JavaScript & Firebase Real-Time Logic -->
+    <script>
+        // TODO: Replace with your actual Firebase configuration keys from your Firebase Console
+        const firebaseConfig = {
+            apiKey: "AIzaSyDQOwYHiGRd8MUu5EvJk6WkM3HxIL80zh8",
+            authDomain: "frk-marketplace-6d1b9.firebaseapp.com",
+            projectId: "frk-marketplace-6d1b9",
+            storageBucket: "frk-marketplace-6d1b9.firebasestorage.app.appspot.com",
+            messagingSenderId: "7157245654",
+            appId: "1:7157245654:web:3b9acdf6e67fbafcf74b77"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        let allLoadedItems = [];
+        let isAdminLoggedIn = false;
+
+        // Fetch live items from Firebase online database automatically on load
+        window.onload = function() {
+            loadItemsFromDatabase();
+        };
+
+        function loadItemsFromDatabase() {
+            db.collection("items").orderBy("createdAt", "desc").onSnapshot((snapshot) => {
+                allLoadedItems = [];
+                snapshot.forEach((doc) => {
+                    allLoadedItems.push({ id: doc.id, ...doc.data() });
+                });
+                renderItems(allLoadedItems);
+            }, (error) => {
+                console.error("Error loading database items: ", error);
+            });
+        }
+
+        function renderItems(data) {
+            const grid = document.getElementById('itemsGrid');
+            grid.innerHTML = '';
+
+            if (data.length === 0) {
+                grid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 3rem;">No items found online yet.</p>`;
+                return;
+            }
+
+            data.forEach((item) => {
+                const rawNumber = item.mobile.replace(/[^0-9+]/g, '');
+
+                const card = document.createElement('div');
+                card.className = `item-card ${isAdminLoggedIn ? 'admin-mode' : ''}`;
+                card.innerHTML = `
+                    <div class="item-img-container">
+                        <span class="item-badge">2nd Hand Deal</span>
+                        <img src="${item.image || 'https://images.unsplash.com/photo-1526738549149-8e07eca6c147?auto=format&fit=crop&w=600&q=80'}" alt="${item.name}">
+                    </div>
+                    <div class="item-details">
+                        <h4 class="item-title">${item.name}</h4>
+                        <div class="item-price">${item.price}</div>
+                        <div class="item-meta">
+                            <span><i class="fa-solid fa-location-dot" style="color: var(--accent);"></i> ${item.location}</span>
+                            <span><i class="fa-solid fa-phone" style="color: var(--success);"></i> ${item.mobile}</span>
+                        </div>
+                        <div class="item-actions">
+                            <a href="tel:${rawNumber}" class="btn"><i class="fa-solid fa-phone-volume"></i> Call Now</a>
+                        </div>
+                    </div>
+                    <div class="admin-controls">
+                        <span style="font-size: 0.8rem; font-weight: 700; color: var(--accent);">Admin Tools</span>
+                        <div>
+                            <button class="btn btn-outline" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;" onclick="openEditModal('${item.id}')"><i class="fa-solid fa-pen"></i></button>
+                            <button class="btn btn-danger" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;" onclick="deleteItemFromCloud('${item.id}')"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function openLoginModal() {
+            document.getElementById('loginModal').style.display = 'flex';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function openAddModal() {
+            document.getElementById('itemModalTitle').innerText = 'Add New Item Online';
+            document.getElementById('editDocId').value = '';
+            document.getElementById('itemName').value = '';
+            document.getElementById('itemPrice').value = '';
+            document.getElementById('itemMobile').value = '';
+            document.getElementById('itemLocation').value = '';
+            document.getElementById('itemImageFile').value = '';
+            document.getElementById('itemImageBase64').value = '';
+            document.getElementById('itemModal').style.display = 'flex';
+        }
+
+        function handleLogin() {
+            const email = document.getElementById('loginEmail').value.trim();
+            const pass = document.getElementById('loginPassword').value.trim();
+            const errorDiv = document.getElementById('loginError');
+
+            if (email === 'gknowledge471@gmail.com' && pass === 'mardan332211') {
+                isAdminLoggedIn = true;
+                errorDiv.style.display = 'none';
+                closeModal('loginModal');
+                
+                document.getElementById('adminToggleBtn').style.display = 'none';
+                document.getElementById('adminLogoutBtn').style.display = 'inline-flex';
+                document.getElementById('addItemBtn').style.display = 'inline-flex';
+                document.getElementById('bodyTag').classList.add('admin-mode');
+                
+                renderItems(allLoadedItems);
+            } else {
+                errorDiv.style.display = 'block';
+            }
+        }
+
+        function logoutAdmin() {
+            isAdminLoggedIn = false;
+            document.getElementById('adminToggleBtn').style.display = 'inline-flex';
+            document.getElementById('adminLogoutBtn').style.display = 'none';
+            document.getElementById('addItemBtn').style.display = 'none';
+            document.getElementById('bodyTag').classList.remove('admin-mode');
+            renderItems(allLoadedItems);
+        }
+
+        function previewImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('itemImageBase64').value = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function saveItemToCloud() {
+            const name = document.getElementById('itemName').value.trim();
+            const price = document.getElementById('itemPrice').value.trim();
+            const mobile = document.getElementById('itemMobile').value.trim();
+            const location = document.getElementById('itemLocation').value.trim();
+            const imageBase64 = document.getElementById('itemImageBase64').value;
+            const editDocId = document.getElementById('editDocId').value;
+
+            if (!name || !price || !mobile || !location) {
+                alert('Please fill in all required fields.');
+                return;
+            }
+
+            // Find existing image if editing and no new image was selected
+            let existingImage = 'https://images.unsplash.com/photo-1526738549149-8e07eca6c147?auto=format&fit=crop&w=600&q=80';
+            if (editDocId) {
+                const found = allLoadedItems.find(i => i.id === editDocId);
+                if (found) existingImage = found.image;
+            }
+
+            const itemData = {
+                name,
+                price,
+                mobile,
+                location,
+                image: imageBase64 || existingImage,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            if (editDocId) {
+                db.collection("items").doc(editDocId).update(itemData)
+                  .then(() => {
+                      closeModal('itemModal');
+                  })
+                  .catch((error) => {
+                      alert("Error updating item: " + error.message);
+                  });
+            } else {
+                db.collection("items").add(itemData)
+                  .then(() => {
+                      closeModal('itemModal');
+                  })
+                  .catch((error) => {
+                      alert("Error adding item: " + error.message);
+                  });
+            }
+        }
+
+        function openEditModal(id) {
+            const item = allLoadedItems.find(i => i.id === id);
+            if (!item) return;
+
+            document.getElementById('itemModalTitle').innerText = 'Edit Online Item';
+            document.getElementById('editDocId').value = item.id;
+            document.getElementById('itemName').value = item.name;
+            document.getElementById('itemPrice').value = item.price;
+            document.getElementById('itemMobile').value = item.mobile;
+            document.getElementById('itemLocation').value = item.location;
+            document.getElementById('itemImageBase64').value = item.image;
+            document.getElementById('itemModal').style.display = 'flex';
+        }
+
+        function deleteItemFromCloud(id) {
+            if (confirm('Are you sure you want to remove this item online?')) {
+                db.collection("items").doc(id).delete().catch((error) => {
+                    alert("Error removing item: " + error.message);
+                });
+            }
+        }
+
+        function filterItemsLocally() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = allLoadedItems.filter(i => 
+                i.name.toLowerCase().includes(query) || 
+                i.location.toLowerCase().includes(query)
+            );
+            renderItems(filtered);
+        }
+    </script>
+</body>
+</html>
