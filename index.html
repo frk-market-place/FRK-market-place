@@ -213,7 +213,7 @@
             gap: 1.75rem;
         }
 
-        /* Item Card */
+        /* Item Card & Image Slider */
         .item-card {
             background: var(--bg-card);
             border-radius: var(--radius);
@@ -240,16 +240,41 @@
             overflow: hidden;
         }
 
-        .item-img-container img {
+        .slider-wrapper {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.3s ease;
+        }
+
+        .slider-wrapper img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform 0.5s ease;
+            flex-shrink: 0;
+            cursor: pointer;
         }
 
-        .item-card:hover .item-img-container img {
-            transform: scale(1.05);
+        .slider-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            z-index: 10;
         }
+
+        .slider-btn.prev { left: 8px; }
+        .slider-btn.next { right: 8px; }
 
         .item-badge {
             position: absolute;
@@ -263,6 +288,7 @@
             font-weight: 700;
             color: var(--primary);
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            z-index: 5;
         }
 
         .item-details {
@@ -384,6 +410,8 @@
 
         .modal-body {
             padding: 1.5rem;
+            max-height: 80vh;
+            overflow-y: auto;
         }
 
         .form-group {
@@ -419,6 +447,39 @@
             font-size: 0.8rem;
             margin-top: 0.25rem;
             display: none;
+        }
+
+        /* Lightbox Full Screen Modal */
+        #lightboxModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 3000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        #lightboxImg {
+            max-width: 95%;
+            max-height: 85%;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+
+        #lightboxClose {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 2.5rem;
+            cursor: pointer;
         }
 
         /* Footer */
@@ -492,6 +553,12 @@
         </div>
     </div>
 
+    <!-- Full-Screen Image Lightbox Modal -->
+    <div id="lightboxModal" onclick="closeLightbox()">
+        <button id="lightboxClose">&times;</button>
+        <img id="lightboxImg" src="" alt="Full Screen View">
+    </div>
+
     <!-- Admin Login Modal -->
     <div class="modal" id="loginModal">
         <div class="modal-content">
@@ -540,9 +607,9 @@
                     <input type="text" id="itemLocation" placeholder="e.g. Main Bazaar, Mardan">
                 </div>
                 <div class="form-group">
-                    <label>Item Image (Upload Local Image)</label>
-                    <input type="file" id="itemImageFile" accept="image/*" onchange="previewImage(event)">
-                    <input type="hidden" id="itemImageBase64">
+                    <label>Upload Item Images (Select 1 to 10 Images)</label>
+                    <input type="file" id="itemImagesFile" accept="image/*" multiple onchange="processMultipleImages(event)">
+                    <small style="color: var(--text-muted); display:block; margin-top:0.25rem;">Select multiple photos at once from your phone gallery.</small>
                 </div>
                 <button class="btn" style="width: 100%; justify-content: center; margin-top: 0.5rem;" onclick="saveItemToCloud()">Save Item Online</button>
             </div>
@@ -556,7 +623,6 @@
 
     <!-- JavaScript & Firebase Real-Time Logic -->
     <script>
-        // TODO: Replace with your actual Firebase configuration keys from your Firebase Console
         const firebaseConfig = {
             apiKey: "AIzaSyDQOwYHiGRd8MUu5EvJk6WkM3HxIL80zh8",
             authDomain: "frk-marketplace-6d1b9.firebaseapp.com",
@@ -572,8 +638,8 @@
 
         let allLoadedItems = [];
         let isAdminLoggedIn = false;
+        let tempImagesArray = [];
 
-        // Fetch live items from Firebase online database automatically on load
         window.onload = function() {
             loadItemsFromDatabase();
         };
@@ -601,13 +667,26 @@
 
             data.forEach((item) => {
                 const rawNumber = item.mobile.replace(/[^0-9+]/g, '');
+                const images = item.images && item.images.length > 0 ? item.images : ['https://images.unsplash.com/photo-1526738549149-8e07eca6c147?auto=format&fit=crop&w=600&q=80'];
+                const cardId = `slider_${Math.random().toString(36).substring(2, 9)}`;
+
+                let sliderImagesHTML = '';
+                images.forEach((imgUrl) => {
+                    sliderImagesHTML += `<img src="${imgUrl}" onclick="openLightbox('${imgUrl}')" alt="${item.name}">`;
+                });
 
                 const card = document.createElement('div');
                 card.className = `item-card ${isAdminLoggedIn ? 'admin-mode' : ''}`;
                 card.innerHTML = `
-                    <div class="item-img-container">
-                        <span class="item-badge">2nd Hand Deal</span>
-                        <img src="${item.image || 'https://images.unsplash.com/photo-1526738549149-8e07eca6c147?auto=format&fit=crop&w=600&q=80'}" alt="${item.name}">
+                    <div class="item-img-container" id="${cardId}">
+                        <span class="item-badge">${images.length} Photo${images.length > 1 ? 's' : ''}</span>
+                        <div class="slider-wrapper" style="transform: translateX(0%);">
+                            ${sliderImagesHTML}
+                        </div>
+                        ${images.length > 1 ? `
+                            <button class="slider-btn prev" onclick="moveSlide('${cardId}', -1, ${images.length})"><i class="fa-solid fa-chevron-left"></i></button>
+                            <button class="slider-btn next" onclick="moveSlide('${cardId}', 1, ${images.length})"><i class="fa-solid fa-chevron-right"></i></button>
+                        ` : ''}
                     </div>
                     <div class="item-details">
                         <h4 class="item-title">${item.name}</h4>
@@ -632,6 +711,29 @@
             });
         }
 
+        // Image Slider logic for multiple images
+        window.slideIndexes = {};
+        function moveSlide(containerId, direction, totalImages) {
+            if (!window.slideIndexes[containerId]) window.slideIndexes[containerId] = 0;
+            window.slideIndexes[containerId] += direction;
+            
+            if (window.slideIndexes[containerId] >= totalImages) window.slideIndexes[containerId] = 0;
+            if (window.slideIndexes[containerId] < 0) window.slideIndexes[containerId] = totalImages - 1;
+
+            const wrapper = document.querySelector(`#${containerId} .slider-wrapper`);
+            wrapper.style.transform = `translateX(-${window.slideIndexes[containerId] * 100}%)`;
+        }
+
+        // Full Screen Lightbox Functions
+        function openLightbox(imgUrl) {
+            document.getElementById('lightboxImg').src = imgUrl;
+            document.getElementById('lightboxModal').style.display = 'flex';
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightboxModal').style.display = 'none';
+        }
+
         function openLoginModal() {
             document.getElementById('loginModal').style.display = 'flex';
         }
@@ -641,14 +743,14 @@
         }
 
         function openAddModal() {
-            document.getElementById('itemModalTitle').innerText = 'Add New Item Online';
+            document.getElementById('itemModalTitle').innerText = 'Add New Item Online (1 to 10 Photos)';
             document.getElementById('editDocId').value = '';
             document.getElementById('itemName').value = '';
             document.getElementById('itemPrice').value = '';
             document.getElementById('itemMobile').value = '';
             document.getElementById('itemLocation').value = '';
-            document.getElementById('itemImageFile').value = '';
-            document.getElementById('itemImageBase64').value = '';
+            document.getElementById('itemImagesFile').value = '';
+            tempImagesArray = [];
             document.getElementById('itemModal').style.display = 'flex';
         }
 
@@ -682,14 +784,22 @@
             renderItems(allLoadedItems);
         }
 
-        function previewImage(event) {
-            const file = event.target.files[0];
-            if (file) {
+        // Process up to 10 selected images
+        function processMultipleImages(event) {
+            const files = event.target.files;
+            tempImagesArray = [];
+            
+            const limit = Math.min(files.length, 10);
+            if (files.length > 10) {
+                alert('You can select a maximum of 10 images. Only the first 10 will be uploaded.');
+            }
+
+            for (let i = 0; i < limit; i++) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    document.getElementById('itemImageBase64').value = e.target.result;
+                    tempImagesArray.push(e.target.result);
                 };
-                reader.readAsDataURL(file);
+                reader.readAsDataURL(files[i]);
             }
         }
 
@@ -698,7 +808,6 @@
             const price = document.getElementById('itemPrice').value.trim();
             const mobile = document.getElementById('itemMobile').value.trim();
             const location = document.getElementById('itemLocation').value.trim();
-            const imageBase64 = document.getElementById('itemImageBase64').value;
             const editDocId = document.getElementById('editDocId').value;
 
             if (!name || !price || !mobile || !location) {
@@ -706,38 +815,31 @@
                 return;
             }
 
-            // Find existing image if editing and no new image was selected
-            let existingImage = 'https://images.unsplash.com/photo-1526738549149-8e07eca6c147?auto=format&fit=crop&w=600&q=80';
+            let existingImages = ['https://images.unsplash.com/photo-1526738549149-8e07eca6c147?auto=format&fit=crop&w=600&q=80'];
             if (editDocId) {
                 const found = allLoadedItems.find(i => i.id === editDocId);
-                if (found) existingImage = found.image;
+                if (found && found.images) existingImages = found.images;
             }
+
+            const finalImages = tempImagesArray.length > 0 ? tempImagesArray : existingImages;
 
             const itemData = {
                 name,
                 price,
                 mobile,
                 location,
-                image: imageBase64 || existingImage,
+                images: finalImages,
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
             };
 
             if (editDocId) {
                 db.collection("items").doc(editDocId).update(itemData)
-                  .then(() => {
-                      closeModal('itemModal');
-                  })
-                  .catch((error) => {
-                      alert("Error updating item: " + error.message);
-                  });
+                  .then(() => closeModal('itemModal'))
+                  .catch((error) => alert("Error updating item: " + error.message));
             } else {
                 db.collection("items").add(itemData)
-                  .then(() => {
-                      closeModal('itemModal');
-                  })
-                  .catch((error) => {
-                      alert("Error adding item: " + error.message);
-                  });
+                  .then(() => closeModal('itemModal'))
+                  .catch((error) => alert("Error adding item: " + error.message));
             }
         }
 
@@ -751,7 +853,8 @@
             document.getElementById('itemPrice').value = item.price;
             document.getElementById('itemMobile').value = item.mobile;
             document.getElementById('itemLocation').value = item.location;
-            document.getElementById('itemImageBase64').value = item.image;
+            tempImagesArray = item.images || [item.image || 'https://images.unsplash.com/photo-1526738549149-8e07eca6c147?auto=format&fit=crop&w=600&q=80'];
+            document.getElementById('itemImagesFile').value = '';
             document.getElementById('itemModal').style.display = 'flex';
         }
 
